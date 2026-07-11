@@ -1,0 +1,157 @@
+{
+  "_readme": "Curated seed dataset of well-known Indian fund managers. Dates marked verified=true were checked against public sources (AMC pages, Value Research, fund factsheet coverage) in July 2026; verified=false entries are best-effort and should be re-checked before being relied on. scheme_name_hint is fuzzy-matched against the schemes table by the loader - Direct Plan Growth variants are preferred.",
+  "managers": [
+    {
+      "name": "R. Srinivasan",
+      "amc": "SBI Mutual Fund",
+      "career_start_year": 1992,
+      "bio": "Head of Equities at SBI Mutual Fund; joined SBI MF in 2009. Known for a bottom-up, quality-focused stock-picking style, most visibly in SBI Small Cap.",
+      "assignments": [
+        {
+          "scheme_name_hint": "SBI Small Cap Fund - Direct Plan - Growth",
+          "start_date": "2013-11-16",
+          "end_date": null,
+          "role": "lead",
+          "verified": true,
+          "note": "Managing since 16 Nov 2013"
+        },
+        {
+          "scheme_name_hint": "SBI Focused Fund - Direct Plan - Growth",
+          "start_date": "2013-01-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": false,
+          "note": "Has managed the strategy since May 2009 (regular plan); direct plan NAV exists only from Jan 2013, so tenure is clipped to that"
+        }
+      ]
+    },
+    {
+      "name": "Sankaran Naren",
+      "amc": "ICICI Prudential Mutual Fund",
+      "career_start_year": 1989,
+      "bio": "ED & CIO of ICICI Prudential AMC. Veteran value/contrarian investor. Note: managed Value Discovery up to Feb 2011, then returned to the fund in Jan 2021 - the score below reflects only the current stint.",
+      "assignments": [
+        {
+          "scheme_name_hint": "ICICI Prudential Value Discovery Fund - Direct Plan - Growth",
+          "start_date": "2021-01-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": true,
+          "note": "Current stint began Jan 2021; earlier stint ended Feb 2011"
+        }
+      ]
+    },
+    {
+      "name": "Rajeev Thakkar",
+      "amc": "PPFAS Mutual Fund",
+      "career_start_year": 1994,
+      "bio": "CIO of PPFAS AMC. Has managed Parag Parikh Flexi Cap since its May 2013 inception; long-horizon, value-oriented, holds foreign equities alongside Indian.",
+      "assignments": [
+        {
+          "scheme_name_hint": "Parag Parikh Flexi Cap Fund - Direct Plan - Growth",
+          "start_date": "2013-05-24",
+          "end_date": null,
+          "role": "lead",
+          "verified": true,
+          "note": "Since inception 24 May 2013"
+        }
+      ]
+    },
+    {
+      "name": "Neelesh Surana",
+      "amc": "Mirae Asset Mutual Fund",
+      "career_start_year": 1994,
+      "bio": "CIO of Mirae Asset Investment Managers (India); joined Mirae in 2008. Built the Emerging Bluechip track record from inception.",
+      "assignments": [
+        {
+          "scheme_name_hint": "Mirae Asset Large & Midcap Fund - Direct Plan - Growth",
+          "start_date": "2013-01-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": true,
+          "note": "Managing since fund inception July 2010; direct plan NAV exists only from Jan 2013"
+        }
+      ]
+    },
+    {
+      "name": "Vinit Sambre",
+      "amc": "DSP Mutual Fund",
+      "career_start_year": 1998,
+      "bio": "Head of Equities at DSP; joined in 2007. Long small/mid-cap specialist with a buy-and-hold franchise approach.",
+      "assignments": [
+        {
+          "scheme_name_hint": "DSP Small Cap Fund - Direct Plan - Growth",
+          "start_date": "2013-01-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": true,
+          "note": "Managing since June 2010; direct plan NAV exists only from Jan 2013"
+        }
+      ]
+    },
+    {
+      "name": "Chirag Setalvad",
+      "amc": "HDFC Mutual Fund",
+      "career_start_year": 1996,
+      "bio": "Head of Equities at HDFC AMC. Has run HDFC Mid-Cap Opportunities since its June 2007 inception - one of the longest single-fund tenures in Indian equity funds.",
+      "assignments": [
+        {
+          "scheme_name_hint": "HDFC Mid Cap Fund - Growth Option - Direct Plan",
+          "start_date": "2013-01-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": true,
+          "note": "Managing since fund inception 25 June 2007; direct plan NAV exists only from Jan 2013"
+        }
+      ]
+    },
+    {
+      "name": "Roshi Jain",
+      "amc": "HDFC Mutual Fund",
+      "career_start_year": 2002,
+      "bio": "Senior fund manager at HDFC AMC, previously at Franklin Templeton. Took over HDFC Flexi Cap after Prashant Jain's July 2022 exit.",
+      "assignments": [
+        {
+          "scheme_name_hint": "HDFC Flexi Cap Fund - Direct Plan - Growth",
+          "start_date": "2022-07-29",
+          "end_date": null,
+          "role": "lead",
+          "verified": false,
+          "note": "Start date approximate to end-July 2022 handover"
+        }
+      ]
+    },
+    {
+      "name": "Shreyash Devalkar",
+      "amc": "Axis Mutual Fund",
+      "career_start_year": 2004,
+      "bio": "Senior equity fund manager at Axis AMC; previously at BNP Paribas AMC. Runs Axis's large-cap franchise.",
+      "assignments": [
+        {
+          "scheme_name_hint": "Axis Large Cap Fund - Direct Plan - Growth",
+          "start_date": "2016-11-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": false,
+          "note": "Start date approximate to Nov 2016"
+        }
+      ]
+    },
+    {
+      "name": "Sailesh Raj Bhan",
+      "amc": "Nippon India Mutual Fund",
+      "career_start_year": 1995,
+      "bio": "CIO-Equity at Nippon India MF. Has managed the Multi Cap strategy (formerly Reliance Equity Opportunities) since the mid-2000s.",
+      "assignments": [
+        {
+          "scheme_name_hint": "Nippon India Multi Cap Fund - Direct Plan - Growth",
+          "start_date": "2013-01-01",
+          "end_date": null,
+          "role": "lead",
+          "verified": false,
+          "note": "Managing strategy since ~2005; direct plan NAV exists only from Jan 2013"
+        }
+      ]
+    }
+  ]
+}
