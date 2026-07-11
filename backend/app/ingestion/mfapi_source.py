@@ -52,13 +52,46 @@ class MFApiSource(MFDataSource):
         points = [
             NavPoint(nav_date=datetime.strptime(row["date"], "%d-%m-%Y").date(), nav=float(row["nav"]))
             for row in rows
-            if row.get("nav") not in (None, "", "N.A.")
+            if row.get("nav") not in (None, "", "N.A.") and float(row["nav"]) > 0
         ]
         if start:
             points = [p for p in points if p.nav_date >= start]
         if end:
             points = [p for p in points if p.nav_date <= end]
         return sorted(points, key=lambda p: p.nav_date)
+
+    def get_scheme_full(self, scheme_code: str) -> tuple[SchemeInfo, list[NavPoint]] | None:
+        """Info + full NAV history in a single HTTP round-trip (the /mf/{code}
+        payload contains both; fetching them via the two interface methods
+        would hit the endpoint twice)."""
+        resp = self._client.get(f"/mf/{scheme_code}")
+        if resp.status_code != 200:
+            return None
+        payload = resp.json()
+        meta = payload.get("meta", {})
+        if not meta:
+            return None
+        info = SchemeInfo(
+            scheme_code=str(meta.get("scheme_code", scheme_code)),
+            scheme_name=meta.get("scheme_name", ""),
+            fund_house=meta.get("fund_house"),
+            category=meta.get("scheme_category"),
+            sub_category=meta.get("scheme_type"),
+            isin_growth=meta.get("isin_growth"),
+            isin_div_reinvestment=meta.get("isin_div_reinvestment"),
+        )
+        points = sorted(
+            (
+                NavPoint(
+                    nav_date=datetime.strptime(row["date"], "%d-%m-%Y").date(),
+                    nav=float(row["nav"]),
+                )
+                for row in payload.get("data", [])
+                if row.get("nav") not in (None, "", "N.A.") and float(row["nav"]) > 0
+            ),
+            key=lambda p: p.nav_date,
+        )
+        return info, points
 
     def get_latest_nav(self, scheme_code: str) -> NavPoint | None:
         resp = self._client.get(f"/mf/{scheme_code}/latest")

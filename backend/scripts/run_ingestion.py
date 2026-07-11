@@ -27,9 +27,11 @@ def main() -> None:
     sub.add_parser("master", help="Sync the full scheme code/name/ISIN universe")
 
     backfill_parser = sub.add_parser("backfill", help="Sync category + NAV history for a subset")
-    backfill_parser.add_argument("--contains", default=None, help="Substring filter on scheme_name")
+    backfill_parser.add_argument(
+        "--contains", action="append", default=None, help="Substring filter on scheme_name (repeatable, ANDed)"
+    )
     backfill_parser.add_argument("--limit", type=int, default=None)
-    backfill_parser.add_argument("--sleep", type=float, default=0.15)
+    backfill_parser.add_argument("--workers", type=int, default=8)
 
     args = parser.parse_args()
 
@@ -44,7 +46,7 @@ def main() -> None:
             print(f"Inserted {inserted} new schemes. Total schemes in DB: {total}")
         elif args.command == "backfill":
             attempted, succeeded = backfill_details(
-                source, session, name_contains=args.contains, limit=args.limit, sleep_seconds=args.sleep
+                source, session, name_contains=args.contains, limit=args.limit, workers=args.workers
             )
             print(f"Backfill attempted={attempted} succeeded={succeeded}")
     finally:

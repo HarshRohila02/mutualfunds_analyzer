@@ -1,4 +1,5 @@
 from app.models.db import Base, SessionLocal, engine, get_session
+from app.models.metrics import SchemeMetricsRow
 from app.models.scheme import CategoryBenchmark, NavHistory, Scheme
 
 __all__ = [
@@ -9,4 +10,5 @@ __all__ = [
     "Scheme",
     "NavHistory",
     "CategoryBenchmark",
+    "SchemeMetricsRow",
 ]

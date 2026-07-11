@@ -92,27 +92,88 @@ def sync_scheme_details(source: MFDataSource, session: Session, scheme_code: str
 def backfill_details(
     source: MFDataSource,
     session: Session,
-    name_contains: str | None = None,
+    name_contains: list[str] | None = None,
     limit: int | None = None,
-    sleep_seconds: float = 0.15,
+    workers: int = 8,
+    progress_every: int = 100,
 ) -> tuple[int, int]:
     """Sync details+NAV history for schemes not yet synced, optionally
-    filtered by a substring of scheme_name (e.g. "Direct" + "Growth" to
-    cut the ~37.6k universe down to the actively-relevant subset) and
-    capped by `limit` so this is safe to run incrementally.
+    filtered by substrings of scheme_name (all must match - e.g.
+    ["Direct", "Growth"] cuts the ~37.6k universe down to the ~5k
+    actively-relevant subset) and capped by `limit` so this is safe to
+    run incrementally. Re-running skips already-synced schemes.
+
+    HTTP fetches run on a thread pool (httpx.Client is thread-safe); all
+    SQLite writes stay on the calling thread and are bulk-inserted.
 
     Returns (attempted, succeeded).
     """
+    from concurrent.futures import ThreadPoolExecutor
+    from app.ingestion.mfapi_source import MFApiSource
+
+    if not isinstance(source, MFApiSource):
+        raise NotImplementedError("Parallel backfill currently assumes MFApiSource.get_scheme_full")
+
     query = select(Scheme.scheme_code).where(Scheme.details_synced.is_(False))
-    if name_contains:
-        query = query.where(Scheme.scheme_name.contains(name_contains))
+    for fragment in name_contains or []:
+        query = query.where(Scheme.scheme_name.contains(fragment))
     if limit:
         query = query.limit(limit)
-
     codes = [row[0] for row in session.execute(query)]
+
     succeeded = 0
-    for code in codes:
-        if sync_scheme_details(source, session, code):
-            succeeded += 1
-        time.sleep(sleep_seconds)
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for i, (code, result) in enumerate(
+            zip(codes, pool.map(lambda c: _fetch_with_retry(source, c), codes)), 1
+        ):
+            if result is not None:
+                _write_scheme(session, code, *result)
+                succeeded += 1
+            if progress_every and i % progress_every == 0:
+                print(f"  progress: {i}/{len(codes)} attempted, {succeeded} succeeded", flush=True)
+    session.commit()
     return len(codes), succeeded
+
+
+def _fetch_with_retry(source, code: str, attempts: int = 4):
+    """Network blips (TLS handshake timeouts etc.) over a multi-thousand-call
+    backfill are a certainty, not an edge case - retry with backoff and treat
+    a scheme that still fails as skipped rather than aborting the whole run."""
+    import httpx
+
+    for attempt in range(attempts):
+        try:
+            return source.get_scheme_full(code)
+        except (httpx.HTTPError, httpx.TimeoutException) as exc:
+            if attempt == attempts - 1:
+                print(f"  SKIP {code}: {type(exc).__name__} after {attempts} attempts", flush=True)
+                return None
+            time.sleep(2**attempt)
+    return None
+
+
+def _write_scheme(session: Session, scheme_code: str, info, points) -> None:
+    scheme = session.get(Scheme, scheme_code)
+    if scheme is None:
+        scheme = Scheme(scheme_code=scheme_code, scheme_name=info.scheme_name)
+        session.add(scheme)
+    scheme.scheme_name = info.scheme_name
+    scheme.fund_house = info.fund_house
+    scheme.category = info.category
+    scheme.sub_category = info.sub_category
+    scheme.isin_growth = info.isin_growth or scheme.isin_growth
+    scheme.isin_div_reinvestment = info.isin_div_reinvestment or scheme.isin_div_reinvestment
+    scheme.details_synced = True
+
+    existing_dates = {
+        row[0]
+        for row in session.execute(select(NavHistory.nav_date).where(NavHistory.scheme_code == scheme_code))
+    }
+    new_rows = [
+        {"scheme_code": scheme_code, "nav_date": p.nav_date, "nav": p.nav}
+        for p in points
+        if p.nav_date not in existing_dates
+    ]
+    if new_rows:
+        session.execute(NavHistory.__table__.insert(), new_rows)
+    session.commit()
