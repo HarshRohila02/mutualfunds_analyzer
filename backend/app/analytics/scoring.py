@@ -44,18 +44,26 @@ def add_category_percentiles(df: pd.DataFrame) -> pd.DataFrame:
     df["category_peer_count"] = None
 
     for category, group in df.groupby("category", dropna=True):
-        peer_count = len(group)
-        df.loc[group.index, "category_peer_count"] = peer_count
+        # Only funds with a full 3y record enter the pool: a 18-month fund's
+        # whole-life Sharpe isn't comparable to peers' trailing-3y Sharpe,
+        # and letting it in distorts everyone's ranks. Younger funds stay
+        # unscored ("too young") rather than getting a flattering rank.
+        pool = group[group["cagr_3y"].notna()]
+        peer_count = len(pool)
+        df.loc[pool.index, "category_peer_count"] = peer_count
         if peer_count < MIN_PEERS:
             continue
         for pct_col, src_col in source_cols.items():
-            ranked = group[src_col].rank(pct=True) * 100  # NaNs stay NaN
-            df.loc[group.index, pct_col] = ranked
+            ranked = pool[src_col].rank(pct=True) * 100  # NaNs stay NaN
+            df.loc[pool.index, pct_col] = ranked
 
     # Composite: weighted mean over available percentiles, re-normalizing
-    # weights when a metric is missing so young-ish funds still get a score
-    # from what we *can* measure (peer count already gates reliability).
+    # weights when a metric is missing (e.g. a 4y fund has no consistency
+    # signal yet). The 3y-record gate above already keeps genuinely young
+    # funds out entirely.
     def _composite(row: pd.Series) -> float | None:
+        if pd.isna(row["pct_cagr_3y"]):
+            return None
         total_weight = 0.0
         acc = 0.0
         for col, weight in SCORE_WEIGHTS.items():

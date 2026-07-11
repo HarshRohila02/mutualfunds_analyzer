@@ -4,9 +4,10 @@ category-relative scores -> scheme_metrics table."""
 from __future__ import annotations
 
 from dataclasses import asdict
+from datetime import timedelta
 
 import pandas as pd
-from sqlalchemy import select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from app.analytics.metrics import compute_scheme_metrics
@@ -14,12 +15,40 @@ from app.analytics.scoring import add_category_percentiles
 from app.models.metrics import SchemeMetricsRow
 from app.models.scheme import NavHistory, Scheme
 
+# A fund whose NAV hasn't printed in this long is dead (matured FMP, wound-up
+# or merged scheme). Dead funds must not enter percentile pools or top lists -
+# otherwise matured fixed-maturity plans with smooth historical NAVs dominate
+# every ranking.
+STALE_NAV_DAYS = 30
+
 
 def recompute_all(session: Session, progress_every: int = 250) -> tuple[int, int]:
     """Returns (schemes_considered, metrics_rows_written)."""
-    schemes = session.execute(
-        select(Scheme.scheme_code, Scheme.category).where(Scheme.details_synced.is_(True))
-    ).all()
+    latest_overall = session.execute(select(func.max(NavHistory.nav_date))).scalar_one()
+    cutoff = latest_overall - timedelta(days=STALE_NAV_DAYS)
+
+    live_codes = {
+        row[0]
+        for row in session.execute(
+            select(NavHistory.scheme_code)
+            .group_by(NavHistory.scheme_code)
+            .having(func.max(NavHistory.nav_date) >= cutoff)
+        )
+    }
+
+    schemes = [
+        row
+        for row in session.execute(
+            select(Scheme.scheme_code, Scheme.category).where(Scheme.details_synced.is_(True))
+        ).all()
+        if row[0] in live_codes
+    ]
+
+    # Drop metrics rows for schemes that have since gone stale.
+    session.execute(
+        delete(SchemeMetricsRow).where(SchemeMetricsRow.scheme_code.not_in(live_codes))
+    )
+    session.commit()
 
     records: list[dict] = []
     for i, (code, category) in enumerate(schemes, 1):

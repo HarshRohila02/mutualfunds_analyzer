@@ -1,111 +1,577 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Bahi-khata ledger palette */
+  --paper: #f7f5f0;
+  --paper-raised: #fdfcf9;
+  --ink: #1c2433;
+  --ink-soft: #55617a;
+  --rule: #d9d3c6;
+  --kumkum: #a92c22; /* ledger red: structure, stamps, losses */
+  --market-green: #1e6b4e; /* gains */
+  --highlight: #f0e9da;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+* {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--highlight);
+}
+
+/* ---------- App chrome ---------- */
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 18px 28px 14px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.masthead .wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.masthead .wordmark span {
+  color: var(--kumkum);
+}
+
+.masthead .tagline {
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.masthead nav {
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+}
+
+.masthead nav a {
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-h);
+  text-decoration: none;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+.masthead nav a:hover,
+.masthead nav a.active {
+  color: var(--kumkum);
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 28px 80px;
+}
+
+/* ---------- Shared primitives ---------- */
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--kumkum);
+  margin: 0 0 6px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.pos {
+  color: var(--market-green);
+}
+
+.neg {
+  color: var(--kumkum);
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  padding: 20px;
+}
+
+/* ---------- Search ---------- */
+
+.search-hero {
+  padding: 48px 0 32px;
+  max-width: 720px;
+}
+
+.search-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 42px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+
+.search-hero p {
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+}
+
+.search-box {
+  display: flex;
+  border: 2px solid var(--ink);
+  background: var(--paper-raised);
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+}
+
+.search-box input::placeholder {
+  color: var(--ink-soft);
+}
+
+.search-box button {
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0 22px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.search-box button:hover {
+  background: var(--kumkum);
+}
+
+.search-box input:focus-visible,
+.search-box button:focus-visible {
+  outline: 2px solid var(--kumkum);
+  outline-offset: -2px;
+}
+
+/* ---------- Fund table ---------- */
+
+.fund-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+}
+
+.fund-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.fund-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: baseline;
+}
+
+.fund-table tbody tr {
+  cursor: pointer;
+}
+
+.fund-table tbody tr:hover {
+  background: var(--highlight);
+}
+
+.fund-table .num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fund-table .name {
+  font-weight: 500;
+}
+
+.fund-table .sub {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.score-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  border: 1.5px solid currentColor;
+  padding: 1px 8px;
+  min-width: 46px;
+  text-align: center;
+}
+
+/* ---------- Fund detail ---------- */
+
+.fund-header {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.fund-header h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+  max-width: 640px;
+}
+
+.fund-header .meta {
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.fund-header .meta .mono {
+  color: var(--ink);
+}
+
+/* The auditor's stamp - signature element */
+.stamp {
+  flex-shrink: 0;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 3px double var(--kumkum);
+  color: var(--kumkum);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transform: rotate(-6deg);
+  position: relative;
+}
+
+.stamp::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--kumkum);
+  opacity: 0.55;
+}
+
+.stamp .score {
+  font-family: var(--font-mono);
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.stamp .label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  max-width: 90px;
+  text-align: center;
+}
+
+.stamp.unscored {
+  color: var(--ink-soft);
+  border-color: var(--ink-soft);
+}
+
+.stamp.unscored::after {
+  border-color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stamp {
+    animation: stamp-press 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  }
+
+  @keyframes stamp-press {
+    from {
+      transform: rotate(-6deg) scale(1.6);
+      opacity: 0;
+    }
+    to {
+      transform: rotate(-6deg) scale(1);
+      opacity: 1;
+    }
   }
 }
-p {
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detail-grid .full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 860px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fund-header {
+    flex-direction: column-reverse;
+  }
+}
+
+.card h2 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--ink);
+}
+
+/* metric rows, ruled like ledger lines */
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--rule);
+  font-size: 14px;
+}
+
+.metric-row:last-child {
+  border-bottom: none;
+}
+
+.metric-row .v {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* percentile rail */
+.rail-row {
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--rule);
+}
+
+.rail-row:last-child {
+  border-bottom: none;
+}
+
+.rail-row .rail-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.rail {
+  position: relative;
+  height: 6px;
+  background: var(--highlight);
+  border: 1px solid var(--rule);
+}
+
+.rail .fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ink);
+  opacity: 0.18;
+}
+
+.rail .tick {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  background: var(--kumkum);
+  transform: translateX(-1.5px);
+}
+
+/* ---------- Manager card ---------- */
+
+.manager-block {
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+.manager-block:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.manager-name {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.manager-scores {
+  display: flex;
+  gap: 24px;
+  margin: 10px 0;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.manager-scores .item .k {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.manager-scores .item .v {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.caveat {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  border-left: 3px solid var(--kumkum);
+  padding: 4px 10px;
+  margin: 8px 0;
+  background: var(--highlight);
+}
+
+.assignment {
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--rule);
+}
+
+.assignment:last-child {
+  border-bottom: none;
+}
+
+.assignment .line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.assignment .nums {
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* ---------- Loading / error / empty ---------- */
+
+.state-note {
+  padding: 40px 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.state-note.error {
+  color: var(--kumkum);
+}
+
+/* ---------- Category strip ---------- */
+
+.cat-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 10px;
+}
+
+.cat-strip button {
+  border: 1px solid var(--rule);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.cat-strip button:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.cat-strip button.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 34px 0 12px;
+}
+
+.section-head h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0;
 }
