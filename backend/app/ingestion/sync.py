@@ -135,6 +135,41 @@ def backfill_details(
     return len(codes), succeeded
 
 
+def refresh_nav_history(
+    source: MFDataSource,
+    session: Session,
+    workers: int = 8,
+    progress_every: int = 500,
+) -> tuple[int, int]:
+    """Nightly job: re-fetch every already-synced scheme and insert any NAV
+    dates we don't have yet (typically just the last trading day or two).
+    Returns (attempted, succeeded)."""
+    from concurrent.futures import ThreadPoolExecutor
+    from app.ingestion.mfapi_source import MFApiSource
+
+    if not isinstance(source, MFApiSource):
+        raise NotImplementedError("Refresh currently assumes MFApiSource.get_scheme_full")
+
+    codes = [
+        row[0]
+        for row in session.execute(
+            select(Scheme.scheme_code).where(Scheme.details_synced.is_(True))
+        )
+    ]
+    succeeded = 0
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for i, (code, result) in enumerate(
+            zip(codes, pool.map(lambda c: _fetch_with_retry(source, c), codes)), 1
+        ):
+            if result is not None:
+                _write_scheme(session, code, *result)
+                succeeded += 1
+            if progress_every and i % progress_every == 0:
+                print(f"  refresh: {i}/{len(codes)}", flush=True)
+    session.commit()
+    return len(codes), succeeded
+
+
 def _fetch_with_retry(source, code: str, attempts: int = 4):
     """Network blips (TLS handshake timeouts etc.) over a multi-thousand-call
     backfill are a certainty, not an edge case - retry with backoff and treat
