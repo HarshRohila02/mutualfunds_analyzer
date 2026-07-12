@@ -120,26 +120,21 @@ open backlog option, not yet built.
 
 ## Status (as of 2026-07-12)
 
-**Done & committed (Phases 0–5):** data pipeline, quant engine + Fund Score, manager
+**Done & committed (Phases 0–6):** data pipeline, quant engine + Fund Score, manager
 scoring, dashboard (search / fund detail / managers), research assistant + chat UI, nightly
-scheduler. 9 tests passing.
+scheduler, benchmark alpha/beta engine. 16 tests passing.
 
-**In progress — Phase 6: Benchmark alpha/beta engine.** Approach: use index funds already in
-the DB as benchmark proxies (their NAV ≈ index TRI minus tiny expense drag), map each equity
-category to a proxy, compute alpha/beta_3y vs the proxy, add columns to `scheme_metrics`,
-expose in the API + fund-detail UI, and test.
-Proxy candidates already scouted in the DB (oldest/longest history per index):
-  - Nifty 50: `118581` Franklin India Index NIFTY 50 (from 2013-01) or `118482` Bandhan Nifty 50
-  - Nifty Next 50: `120684` ICICI Pru Nifty Next 50 (from 2013-01)
-  - Nifty Midcap 150: `148726` Nippon India Nifty Midcap 150 (from 2021-02)
-  - Nifty Smallcap 250: `148519` Nippon India Nifty Smallcap 250 (from 2020-10)
-  - Nifty 500: `147625` Motilal Oswal Nifty 500 Index (from 2019-09) — **already synced into DB**
-  - Sensex: `118791` Nippon India Index BSE Sensex (from 2013-01)
-Next steps: build a `category -> proxy scheme_code` mapping (curated, table or seed);
-add `alpha_3y`, `beta_3y`, `benchmark_code` to `SchemeMetricsRow`; compute in `analytics/`
-(regress daily fund excess returns on proxy excess returns over the trailing 3y window);
-surface on the fund detail page next to the peer-percentile rails; add tests with a synthetic
-fund = k×benchmark to assert beta≈k, alpha≈0.
+**Phase 6 notes (benchmark alpha/beta):** `analytics/benchmarks.py` holds the curated
+`CATEGORY_PROXIES` map (equity category → index-fund proxy already in the DB) and the pure
+`compute_alpha_beta` regression: daily fund excess returns on proxy excess returns over the
+trailing 3y, gated on the joint window spanning ≥95% of 3y and ≥500 overlapping points.
+Sectoral/Thematic is deliberately unmapped (dozens of unrelated sector benchmarks);
+debt/hybrid have no proxies yet. Columns `alpha_3y`, `beta_3y`, `benchmark_code`,
+`benchmark_name` live on `scheme_metrics`. Since `create_all` never ALTERs existing tables,
+additive columns go through `run_light_migrations()` in `models/db.py` (called from `main.py`
+and `run_recompute.py`) — extend `_LIGHT_MIGRATIONS` for future column adds. Alpha is
+measured net of the proxy fund's expense drag (no TRI feed); the assistant prompt and the
+fund-page footnote both disclose this.
 
 **Backlog:** provider-pluggable assistant (see above), side-by-side fund comparison view,
 holdings/sector data (needs a new source), automated factsheet parsing for manager coverage,

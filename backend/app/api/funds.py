@@ -50,6 +50,10 @@ class MetricsOut(BaseModel):
     fund_score: float | None
     category_peer_count: int | None
     score_category: str | None
+    alpha_3y: float | None
+    beta_3y: float | None
+    benchmark_code: str | None
+    benchmark_name: str | None
 
 
 class FundDetail(BaseModel):

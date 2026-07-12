@@ -11,11 +11,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.analytics.recompute import recompute_all
-from app.models.db import Base, SessionLocal, engine
+from app.models.db import Base, SessionLocal, engine, run_light_migrations
 
 
 def main() -> None:
     Base.metadata.create_all(engine)
+    run_light_migrations()
     session = SessionLocal()
     try:
         considered, written = recompute_all(session)

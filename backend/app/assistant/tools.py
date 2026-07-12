@@ -100,6 +100,7 @@ def get_fund_details(scheme_code: str) -> str:
                     "sortino_3y", "rolling_3y_positive_pct", "rolling_3y_median_cagr",
                     "pct_cagr_3y", "pct_sharpe_3y", "pct_sortino_3y", "pct_max_drawdown",
                     "pct_consistency", "fund_score", "category_peer_count", "score_category",
+                    "alpha_3y", "beta_3y", "benchmark_name",
                 )
             }
         return json.dumps(payload)

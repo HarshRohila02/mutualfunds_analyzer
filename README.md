@@ -11,6 +11,10 @@ database.
 - **Fund Score (0–100)**: category-relative percentile composite — Sharpe 30%, rolling-3y
   consistency 20%, Sortino 20%, 3y CAGR 15%, drawdown resilience 15%. Dead schemes (no NAV
   print in 30 days) and funds younger than 3 years are excluded from scoring by design.
+- **Benchmark alpha/beta (3y)**: for equity categories, daily excess returns are regressed
+  against an index-fund proxy for the category benchmark (e.g. mid-caps vs a Nifty Midcap 150
+  index fund) — the longest-history direct-plan index fund per index stands in for the index
+  itself. Sectoral/thematic funds are deliberately excluded (no single index fits).
 - **Manager Score**: from a curated seed dataset of well-known managers. Performance is
   measured only over the manager's actual tenure window, ranked against category peers over
   the *same* calendar window — inherited track records don't count.
@@ -54,7 +58,8 @@ cd backend && .venv/Scripts/python -m pytest tests/
 ## Known gaps (backlog)
 
 - Portfolio holdings / sector allocation — no free scriptable source found yet (mfdata.in is bot-protected)
-- Benchmark-index NAV feed for true alpha/beta (currently category-peer-relative percentiles)
+- True index (TRI) feed for alpha/beta — current proxies are index funds, so alpha is measured
+  net of the proxy's small expense drag; debt/hybrid categories have no proxy yet
 - Expense ratios (not in mfapi.in)
 - Automated AMC factsheet parsing for full manager coverage (current dataset is a curated seed)
 - ML-based forward performance prediction (deliberately deferred; v1 is explainable quant only)

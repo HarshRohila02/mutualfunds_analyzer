@@ -6,10 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.chat import router as chat_router
 from app.api.funds import router as funds_router
 from app.api.managers import router as managers_router
-from app.models import Base, engine
+from app.models import Base, engine, run_light_migrations
 from app.scheduler import start_scheduler
 
 Base.metadata.create_all(engine)
+run_light_migrations()
 
 
 @asynccontextmanager

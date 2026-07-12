@@ -44,3 +44,12 @@ class SchemeMetricsRow(Base):
     fund_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     category_peer_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     score_category: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # Trailing-3y regression vs the category's index-fund proxy (see
+    # analytics/benchmarks.py). Null when the category has no proxy or the
+    # joint history is too short. NOTE: new columns here also need an entry
+    # in db.run_light_migrations - create_all never ALTERs existing tables.
+    alpha_3y: Mapped[float | None] = mapped_column(Float, nullable=True)
+    beta_3y: Mapped[float | None] = mapped_column(Float, nullable=True)
+    benchmark_code: Mapped[str | None] = mapped_column(String, nullable=True)
+    benchmark_name: Mapped[str | None] = mapped_column(String, nullable=True)

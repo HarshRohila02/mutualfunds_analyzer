@@ -31,6 +31,10 @@ export interface Metrics {
   fund_score: number | null
   category_peer_count: number | null
   score_category: string | null
+  alpha_3y: number | null
+  beta_3y: number | null
+  benchmark_code: string | null
+  benchmark_name: string | null
 }
 
 export interface FundDetail {

@@ -269,6 +269,20 @@ export default function FundPage() {
               No peer ranking — category too small or history too short.
             </div>
           )}
+          {m && m.alpha_3y != null && m.beta_3y != null && (
+            <div style={{ marginTop: 14, paddingTop: 10, borderTop: '1px solid var(--rule)' }}>
+              <MetricRow
+                k={`Alpha (3y) vs ${m.benchmark_name}`}
+                v={fmtPct(m.alpha_3y)}
+                cls={m.alpha_3y < 0 ? 'neg' : 'pos'}
+              />
+              <MetricRow k={`Beta (3y) vs ${m.benchmark_name}`} v={fmtNum(m.beta_3y)} />
+              <p className="muted" style={{ fontSize: 12.5, marginBottom: 0 }}>
+                Regressed on the oldest {m.benchmark_name} index fund as an investable
+                proxy for the index, over 3 years of daily NAVs.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="card full">
